@@ -1,11 +1,12 @@
 import { Task, useStore } from "@/lib/store";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 export function TaskCard({ task }: { task: Task }) {
   const members = useStore((state) => state.members);
-  const assignedMember = members.find(m => m.id === task.assignedTo);
+  const assignedMember = task.task_assignments?.[0]
+    ? members.find(m => m.id === task.task_assignments[0].assignee_id)
+    : undefined;
   
   const statusColors = {
     'todo': 'bg-slate-100',
