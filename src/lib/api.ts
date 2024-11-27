@@ -20,5 +20,5 @@ export async function fetchTasks(projectId?: string) {
     throw error;
   }
 
-  return data as Task[];
+  return data as unknown as Task[];
 }

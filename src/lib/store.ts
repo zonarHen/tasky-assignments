@@ -12,10 +12,13 @@ export type Task = {
   title: string;
   description: string | null;
   status: Status;
-  projectId: string;
-  assignedTo?: string;
+  project_id: string;
   created_at: string;
   created_by: string;
+  task_assignments?: {
+    assignee_id: string;
+    assigned_at: string;
+  }[];
 };
 
 export type Project = {
@@ -28,8 +31,6 @@ type Store = {
   projects: Project[];
   members: Member[];
   addProject: (project: Omit<Project, 'id'>) => void;
-  updateTaskStatus: (taskId: string, status: Status) => void;
-  assignTask: (taskId: string, memberId: string) => void;
 };
 
 export const useStore = create<Store>((set) => ({
@@ -44,17 +45,5 @@ export const useStore = create<Store>((set) => ({
   addProject: (project) =>
     set((state) => ({
       projects: [...state.projects, { ...project, id: Math.random().toString() }],
-    })),
-  updateTaskStatus: (taskId, status) =>
-    set((state) => ({
-      tasks: state.tasks.map((task) =>
-        task.id === taskId ? { ...task, status } : task
-      ),
-    })),
-  assignTask: (taskId, memberId) =>
-    set((state) => ({
-      tasks: state.tasks.map((task) =>
-        task.id === taskId ? { ...task, assignedTo: memberId } : task
-      ),
     })),
 }));
