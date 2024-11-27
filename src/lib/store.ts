@@ -10,10 +10,12 @@ export type Member = {
 export type Task = {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   status: Status;
   projectId: string;
   assignedTo?: string;
+  created_at: string;
+  created_by: string;
 };
 
 export type Project = {
@@ -24,10 +26,8 @@ export type Project = {
 
 type Store = {
   projects: Project[];
-  tasks: Task[];
   members: Member[];
   addProject: (project: Omit<Project, 'id'>) => void;
-  addTask: (task: Omit<Task, 'id'>) => void;
   updateTaskStatus: (taskId: string, status: Status) => void;
   assignTask: (taskId: string, memberId: string) => void;
 };
@@ -37,10 +37,6 @@ export const useStore = create<Store>((set) => ({
     { id: '1', name: 'Website Redesign', description: 'Redesign company website' },
     { id: '2', name: 'Mobile App', description: 'Develop mobile application' },
   ],
-  tasks: [
-    { id: '1', title: 'Design Homepage', description: 'Create new homepage layout', status: 'todo', projectId: '1' },
-    { id: '2', title: 'Setup API', description: 'Initialize backend API', status: 'in-progress', projectId: '2' },
-  ],
   members: [
     { id: '1', name: 'John Doe', avatar: 'JD' },
     { id: '2', name: 'Jane Smith', avatar: 'JS' },
@@ -48,10 +44,6 @@ export const useStore = create<Store>((set) => ({
   addProject: (project) =>
     set((state) => ({
       projects: [...state.projects, { ...project, id: Math.random().toString() }],
-    })),
-  addTask: (task) =>
-    set((state) => ({
-      tasks: [...state.tasks, { ...task, id: Math.random().toString() }],
     })),
   updateTaskStatus: (taskId, status) =>
     set((state) => ({

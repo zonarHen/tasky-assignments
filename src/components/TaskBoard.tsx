@@ -1,5 +1,7 @@
-import { useStore, Status } from "@/lib/store";
+import { Status } from "@/lib/store";
 import { TaskCard } from "./TaskCard";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTasks } from "@/lib/api";
 
 const COLUMNS: { title: string; status: Status }[] = [
   { title: "To Do", status: "todo" },
@@ -8,11 +10,14 @@ const COLUMNS: { title: string; status: Status }[] = [
 ];
 
 export function TaskBoard({ projectId }: { projectId?: string }) {
-  const tasks = useStore((state) => 
-    projectId 
-      ? state.tasks.filter(t => t.projectId === projectId)
-      : state.tasks
-  );
+  const { data: tasks, isLoading } = useQuery({
+    queryKey: ['tasks', projectId],
+    queryFn: () => fetchTasks(projectId),
+  });
+
+  if (isLoading) {
+    return <div>Loading tasks...</div>;
+  }
 
   return (
     <div className="grid grid-cols-3 gap-4">
@@ -21,7 +26,7 @@ export function TaskBoard({ projectId }: { projectId?: string }) {
           <h3 className="font-semibold text-lg">{column.title}</h3>
           <div className="space-y-2">
             {tasks
-              .filter((task) => task.status === column.status)
+              ?.filter((task) => task.status === column.status)
               .map((task) => (
                 <TaskCard key={task.id} task={task} />
               ))}
